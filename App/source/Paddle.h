@@ -4,6 +4,7 @@
 
 
 struct GameSpecification;
+class Ball;
 
 class Paddle
 {
@@ -21,7 +22,7 @@ public:
 	
 	void Reset();
 
-	void Update();
+	void Update(Ball& ball);
 	void Draw();
 
 public:
@@ -38,7 +39,7 @@ private:
 	const float m_PaddingY = 15;
 	const float m_PaddingX = 10;
 
-	const float m_Speed = 5.f;
+	const float m_Speed = 6.f;
 
 	float m_ScreenWidth;
 	float m_ScreenHeight;

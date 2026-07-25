@@ -31,8 +31,8 @@ void Game::Run()
 		/// //////////////UPDATE//////////////
 		if (m_State == GameState::SinglePlayer)
 		{
-			m_LeftPaddle.Update();
-			m_RightPaddle.Update();
+			m_LeftPaddle.Update(m_Ball);
+			m_RightPaddle.Update(m_Ball);
 
 			m_Ball.Update(m_LeftPaddle, m_RightPaddle, m_State);
 		}

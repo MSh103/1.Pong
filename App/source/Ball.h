@@ -13,6 +13,8 @@ public:
 	~Ball() = default;
 
 	const Vector2& GetFuturePosition() { return { m_BallPosition.x + m_BallVelocity.x, m_BallPosition.y + m_BallVelocity.y }; }
+	const Vector2& GetPosition() { return m_BallPosition; }
+	const float& GetRadius() { return m_Radius; }
 
 	void Reset();
 
