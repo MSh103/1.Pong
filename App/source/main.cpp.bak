@@ -1,0 +1,341 @@
+#include <raylib.h>
+
+#include <print>
+#include <algorithm>
+
+
+void DrawCenteredText(std::string msg, int screenWidth, int y, int fontSize, Color color)
+{
+	int textSize = MeasureText(msg.c_str(), fontSize);
+	int centerX = (screenWidth / 2) - (textSize / 2);
+
+	DrawText(msg.c_str(), centerX, y, fontSize, color);
+}
+
+enum class GameState
+{
+	Title,
+	SinglePlayer,
+	Multiplayer,
+	Lose,
+	Win,
+	Player1Win,
+	Player2Win,
+	End
+};
+
+int main()
+{
+	const int screenWidth = 800;
+	const int screenHeight = 600;
+
+	InitWindow(screenWidth, screenHeight, "Pong");
+	InitAudioDevice();
+
+	Sound beep = LoadSound("Assets/beep.ogg");
+	Sound hit = LoadSound("Assets/hit.ogg");
+
+	SetTargetFPS(60);
+
+	const int paddleWidth = 5;
+	const int paddleHeight = screenHeight / 6;
+
+	float paddingX = 10;
+	float paddingY = 15;
+
+	Rectangle paddle1{ paddingX,		   (screenHeight/2) - (paddleHeight/2), paddleWidth, paddleHeight};
+	Rectangle paddle2{ screenWidth - paddingX, (screenHeight/2) - (paddleHeight/2), paddleWidth, paddleHeight};
+
+	float speed = 5.f;
+
+	float angle = 60;
+
+	float radius = 5.f;
+	float side = GetRandomValue(0, 1);
+	float dir = GetRandomValue(0, angle);
+	// MULTIPLY WITH R FOR SPEED NOT DIRECTIOn
+	float x;
+	float y;
+	if (side == 0)
+	{
+		x = cos(dir)*radius;
+		y = sin(dir)*radius;
+	}
+	else 
+	{
+		x = -cos(dir) * radius;
+		y = -sin(dir) * radius;
+	}
+	Vector2 ballVelocity = { x, y };
+	Vector2 ballPosition = { screenWidth / 2, screenHeight / 2 };
+
+	int score1 = 0;
+	int score2 = 0;
+
+	GameState gameState = GameState::Title;
+
+	while (!WindowShouldClose() && gameState != GameState::End)
+	{
+		if (gameState == GameState::Title)
+		{
+			if (IsKeyDown(KEY_ONE))
+			{
+				gameState = GameState::SinglePlayer;
+			}
+			else if (IsKeyDown(KEY_TWO))
+			{
+				gameState = GameState::Multiplayer;
+			}
+		}
+		else if (gameState == GameState::SinglePlayer || gameState == GameState::Multiplayer)
+		{
+			float paddle1Velocity = 0.0f;
+			float paddle2Velocity = 0.0f;
+			if (gameState == GameState::SinglePlayer)
+			{
+				if (paddle1.y > paddingY && IsKeyDown(KEY_W))
+				{
+					paddle1.y -= speed;
+					paddle1Velocity = -speed;
+				}
+				else if (paddle1.y < (screenHeight - (paddingY + paddleHeight)) && IsKeyDown(KEY_S))
+				{
+					paddle1.y += speed;
+					paddle1Velocity = speed;
+				}
+				else
+				{
+					paddle1Velocity = 0.0f;
+				}
+
+				if (ballPosition.x >= screenWidth * 1/6) // ONLY UPDATE PADDLE AI IF ITS IN ITS SECTOR
+				{
+					if (ballPosition.y + 5.f <= paddle2.y && paddle2.y > paddingY)
+					{
+						paddle2.y -= speed;
+						paddle2Velocity = -speed;
+					}
+					else if (ballPosition.y + 5.f >= paddle2.y + paddle2.height && paddle2.y < screenHeight - (paddingY + paddle2.height))
+					{
+						paddle2.y += speed;
+						paddle2Velocity = speed;
+					}
+					else {
+						paddle2Velocity = 0.f;
+					}
+				}
+
+				/// END GAME IF IT TOUCHES ARENA WALLS
+				if (ballPosition.x <= 0 + radius)
+				{
+					ballVelocity.x = 0;
+					ballVelocity.y = 0;
+					PlaySound(hit);
+					gameState = GameState::Lose;
+				}
+
+				if (ballPosition.x >= screenWidth - radius)
+				{
+					ballVelocity.x = 0;
+					ballVelocity.y = 0;
+					PlaySound(hit);
+					gameState = GameState::Win;
+				}
+
+			}
+			else if (gameState == GameState::Multiplayer)
+			{
+
+				if (paddle1.y > paddingY && IsKeyDown(KEY_W))
+				{
+					paddle1.y -= speed;
+					paddle1Velocity = -speed;
+				}
+				else if (paddle1.y < (screenHeight - (paddingY + paddleHeight)) && IsKeyDown(KEY_S))
+				{
+					paddle1.y += speed;
+					paddle1Velocity = speed;
+				}
+				else 
+				{
+					paddle2Velocity = 0.0f;
+				}
+
+				if (paddle2.y > paddingY && IsKeyDown(KEY_UP))
+				{
+					paddle2.y -= speed;
+					paddle2Velocity = -speed;
+				}
+				else if (paddle2.y < (screenHeight - (paddingY + paddleHeight)) && IsKeyDown(KEY_DOWN))
+				{
+					paddle2.y += speed;
+					paddle2Velocity = speed;
+				}
+				else 
+				{
+					paddle2Velocity = 0.f;
+				}
+
+				/// END GAME IF IT TOUCHES ARENA WALLS
+				if (ballPosition.x <= 0 + radius)
+				{
+					ballVelocity.x = 0;
+					ballVelocity.y = 0;
+					PlaySound(hit);
+					gameState = GameState::Player2Win;
+				}
+
+				if (ballPosition.x >= screenWidth - radius)
+				{
+					ballVelocity.x = 0;
+					ballVelocity.y = 0;
+					PlaySound(hit);
+					gameState = GameState::Player1Win;
+				}
+			}
+
+			// BOUNCE IF HITS CEILING
+			if (ballPosition.y <= 0 + radius || ballPosition.y >= screenHeight - radius)
+			{
+				ballVelocity.y = -ballVelocity.y;
+				PlaySound(hit);
+			}
+
+			float futureBallX = ballPosition.x + ballVelocity.x;
+			float futureBallY = ballPosition.y + ballVelocity.y;
+
+			// PADDLE 1
+			if (CheckCollisionCircleRec({ futureBallX, ballPosition.y }, radius, paddle1))
+			{
+				ballVelocity.x = std::abs(ballVelocity.x)+0.5f;
+				ballVelocity.y += paddle1Velocity * 0.4f;
+
+				score1++;
+				PlaySound(hit);
+				PlaySound(beep);
+			}
+			//if (CheckCollisionCircleRec({ ballPosition.x, futureBallY }, radius, paddle1))
+			//{
+			//	ballVelocity.y += paddleVelocity * 0.4f;
+			//	score1++;
+			//	PlaySound(hit);
+			//	PlaySound(beep);
+			//}
+
+			// PADDLE 2
+			if (CheckCollisionCircleRec({ futureBallX, ballPosition.y }, radius, paddle2))
+			{
+				ballVelocity.x = -(std::abs(ballVelocity.x) + 0.5f);
+				ballVelocity.y += paddle2Velocity * 0.4f;
+
+				score2++;
+				PlaySound(hit);
+				PlaySound(beep);
+			}
+			//if (CheckCollisionCircleRec({ ballPosition.x, futureBallY }, radius, paddle2))
+			//{
+			//	ballVelocity.y = -ballVelocity.y;
+			//	score2++;
+			//	PlaySound(hit);
+			//	PlaySound(beep);
+			//}
+
+			ballPosition.x += ballVelocity.x;
+			ballPosition.y += ballVelocity.y;
+		}
+		else
+		{
+			if (IsKeyDown(KEY_SPACE))
+			{
+				gameState = GameState::Title;
+				paddle1.y = (screenHeight / 2) - (paddleHeight / 2);
+				paddle2.y = (screenHeight / 2) - (paddleHeight / 2);
+				ballPosition.x = screenWidth / 2;
+				ballPosition.y = screenHeight / 2;
+				score1 = 0;
+				score2 = 0;
+
+				side = GetRandomValue(0, 1);
+				dir = GetRandomValue(0, angle);
+
+				if (side == 0)
+				{
+					x = cos(dir) * radius;
+					y = sin(dir) * radius;
+				}
+				else
+				{
+					x = -cos(dir) * radius;
+					y = -sin(dir) * radius;
+				}
+
+				ballVelocity = { x, y };
+			}
+			if (IsKeyDown(KEY_ENTER))
+			{
+				gameState = GameState::End;
+			}
+		}
+
+
+		BeginDrawing();
+		ClearBackground(BLACK);
+		
+		if (gameState != GameState::Title)
+		{		
+			DrawText(std::format("{}", score1).c_str(), screenWidth / 2 - (17 + 10), paddingY, 32, WHITE);
+			DrawText(std::format("{}", score2).c_str(), screenWidth / 2 + 10, paddingY, 32, WHITE);
+
+			DrawLine(screenWidth / 2, 0, screenWidth / 2, screenHeight, WHITE);
+
+			DrawCircleV(ballPosition, 5, WHITE);
+
+			DrawRectangleRounded(paddle1, 2, 4, WHITE);
+			DrawRectangleRounded(paddle2, 2, 4, WHITE);
+		}
+
+		if (gameState == GameState::Title)
+		{
+			DrawCenteredText("Pong", screenWidth, screenHeight / 3, 60, VIOLET);
+			DrawCenteredText("Press 1 for SinglePlayer...", screenWidth, (screenHeight * 2 / 3) - 50, 32, PURPLE);
+			DrawCenteredText("Press 2 for MultiPlayer...", screenWidth, (screenHeight * 2 / 3) + 50, 32, PURPLE);
+		}
+		else if (gameState == GameState::Win)
+		{
+			DrawCenteredText("You Won!", screenWidth, screenHeight / 3, 60, RED);
+			DrawCenteredText(std::format("Score: {}", score1), screenWidth, screenHeight / 3 + 100, 24, GREEN);
+			DrawCenteredText("Press Space To Play Again...", screenWidth, screenHeight * 2 / 3 - 50, 32, SKYBLUE);
+			DrawCenteredText("Press Enter To Exit...", screenWidth, screenHeight * 2 / 3 + 50, 32, SKYBLUE);
+		}
+		else if (gameState == GameState::Lose)
+		{
+			DrawCenteredText("You Lost!", screenWidth, screenHeight / 3, 60, RED);
+			DrawCenteredText(std::format("Score: {}", score1), screenWidth, screenHeight / 3 + 100, 24, GREEN);
+			DrawCenteredText("Press Space To Play Again...", screenWidth, screenHeight * 2 / 3 - 50, 32, SKYBLUE);
+			DrawCenteredText("Press Enter To Exit...", screenWidth, screenHeight * 2 / 3 + 50, 32, SKYBLUE);
+		}
+		else if (gameState == GameState::Player1Win)
+		{
+			DrawCenteredText("Player 1 Won!", screenWidth, screenHeight / 3, 60, RED);
+			DrawCenteredText(std::format("Player 1 Score: {}", score1), screenWidth, screenHeight / 3 + 70, 24, GREEN);
+			DrawCenteredText(std::format("Player 2 Score: {}", score2), screenWidth, screenHeight / 3 + 100, 24, GREEN);
+			DrawCenteredText("Press Space To Play Again...", screenWidth, screenHeight * 2 / 3 - 50, 32, SKYBLUE);
+			DrawCenteredText("Press Enter To Exit...", screenWidth, screenHeight * 2 / 3 + 50, 32, SKYBLUE);
+		}
+		else if (gameState == GameState::Player2Win)
+		{
+			DrawCenteredText("Player 2 Won!", screenWidth, screenHeight / 3, 60, RED);
+			DrawCenteredText(std::format("Player 1 Score: {}", score1), screenWidth, screenHeight / 3 + 70, 24, GREEN);
+			DrawCenteredText(std::format("Player 2 Score: {}", score2), screenWidth, screenHeight / 3 + 100, 24, GREEN);
+			DrawCenteredText("Press Space To Play Again...", screenWidth, screenHeight * 2 / 3 - 50, 32, SKYBLUE);
+			DrawCenteredText("Press Enter To Exit...", screenWidth, screenHeight * 2 / 3 + 50, 32, SKYBLUE);
+		}
+
+		EndDrawing();
+	}
+
+	CloseWindow();
+
+	return 0;
+
+}

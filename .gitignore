@@ -1,0 +1,68 @@
+# =========================================================================
+# Visual Studio Build Artifacts and Directories
+# =========================================================================
+# Intermediate and build output directories (x64, x86, Debug, Release)
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]uild/
+
+# MSBuild and temporary object outputs
+[Log]/
+*.obj
+*.ilk
+*.pdb
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.rsp
+*.pgc
+*.pgd
+*.meta
+*.iobj
+*.ipdb
+
+# =========================================================================
+# Visual C++ Cache and Database Files
+# =========================================================================
+.vs/
+*.opensdf
+*.sdf
+*.pidb
+*.vc.opendb
+*.ipch/
+ipch/
+
+# =========================================================================
+# User-Specific Settings and Profiles
+# =========================================================================
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# =========================================================================
+# CMake Generated Files (If using CMake inside Visual Studio)
+# =========================================================================
+CMakeCache.txt
+CMakeFiles/
+CMakeSettings.json
+CMakeUserPresets.json
+cmake_install.cmake
+Makefile
+install_manifest.txt
+
+# =========================================================================
+# Executables and Libraries
+# =========================================================================
+*.exe
+*.dll
+*.lib
+*.so
+*.dylib
+*.a
+
+
+bin-int/
