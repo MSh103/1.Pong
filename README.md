@@ -24,3 +24,6 @@ GenerateProjects.bat
 ## Third-party
 
 - raylib (included in `Thirdparty/`)
+
+Note: If raylib does not work download prebuilt binaries from the offical website.
+https://github.com/raysan5/raylib/releases (I am using release 6.0)
