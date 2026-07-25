@@ -1,5 +1,26 @@
-
 # Pong Clone
 
-This project is part of the 20 Games Challenge (https://20_games_challenge.gitlab.io/) by SDG Games. This is part of the my learning process of game development.
+A Pong clone written in C++ using raylib.
 
+## Requirements
+
+- Visual Studio 2022 (or newer)
+- Premake5
+- Windows
+
+## Building
+
+1. Clone the repository.
+2. Run:
+
+```bat
+GenerateProjects.bat
+```
+
+3. Open `Pong.slnx`.
+4. Build the `Application` project.
+5. Press F5.
+
+## Third-party
+
+- raylib (included in `Thirdparty/`)
