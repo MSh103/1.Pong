@@ -41,5 +41,8 @@ private:
 	Paddle m_RightPaddle;
 	Ball m_Ball;
 
+	Sound m_BeepSE;
+	Sound m_HitSE;
+
 	GameState m_State = GameState::Title;
 };

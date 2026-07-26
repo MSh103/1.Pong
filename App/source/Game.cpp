@@ -17,6 +17,11 @@ Game::Game(const GameSpecification& spec)
 {
 	InitWindow(spec.ScreenWidth, spec.ScreenHeight, spec.Title.c_str());
 	SetTargetFPS(60);
+
+	InitAudioDevice();
+
+	m_BeepSE = LoadSound("Assets/beep.ogg");
+	m_HitSE = LoadSound("Assets/hit.ogg");
 }
 
 Game::~Game()
@@ -34,7 +39,7 @@ void Game::Run()
 			m_LeftPaddle.Update(m_Ball, m_State);
 			m_RightPaddle.Update(m_Ball, m_State);
 
-			m_Ball.Update(m_LeftPaddle, m_RightPaddle, m_State);
+			m_Ball.Update(m_LeftPaddle, m_RightPaddle, m_State, m_BeepSE, m_HitSE);
 		}
 		if (m_State == GameState::Title)
 		{

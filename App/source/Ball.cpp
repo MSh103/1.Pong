@@ -59,10 +59,13 @@ void Ball::Reset()
 	m_BallVelocity = { x,y };
 }
 
-void Ball::Update(Paddle& leftPaddle, Paddle& rightPaddle, GameState& state)
+void Ball::Update(Paddle& leftPaddle, Paddle& rightPaddle, GameState& state, Sound beep, Sound hit)
 {
 	if (m_BallPosition.y <= 0 + m_Radius || m_BallPosition.y >= (m_ScreenHeight - m_Radius))
+	{
 		m_BallVelocity.y = -m_BallVelocity.y;
+		PlaySound(hit);
+	}
 
 	if (state == GameState::SinglePlayer)
 	{
@@ -88,12 +91,16 @@ void Ball::Update(Paddle& leftPaddle, Paddle& rightPaddle, GameState& state)
 		m_BallVelocity.y += leftPaddle.GetVelocity().y * paddleInfluence;
 
 		leftPaddle.Score++;
+		PlaySound(beep);
+		PlaySound(hit);
 	}
 	if (CheckCollisionCircleRec({ m_BallPosition.x, GetFuturePosition().y }, m_Radius, leftPaddle.GetRectangle()))
 	{
 		m_BallVelocity.y += leftPaddle.GetVelocity().y + paddleInfluence;
 		
 		leftPaddle.Score++;
+		PlaySound(beep);
+		PlaySound(hit);
 	}
 
 
@@ -103,12 +110,16 @@ void Ball::Update(Paddle& leftPaddle, Paddle& rightPaddle, GameState& state)
 		m_BallVelocity.y += rightPaddle.GetVelocity().y * paddleInfluence;
 		
 		rightPaddle.Score++;
+		PlaySound(beep);
+		PlaySound(hit);
 	}
 	if (CheckCollisionCircleRec({ m_BallPosition.x, GetFuturePosition().y }, m_Radius, rightPaddle.GetRectangle()))
 	{
 		m_BallVelocity.y = -m_BallVelocity.y;
 		
 		rightPaddle.Score++;
+		PlaySound(beep);
+		PlaySound(hit);
 	}
 
 

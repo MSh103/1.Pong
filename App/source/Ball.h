@@ -18,7 +18,7 @@ public:
 
 	void Reset();
 
-	void Update(Paddle& leftPaddle, Paddle& rightPaddle, GameState& state);
+	void Update(Paddle& leftPaddle, Paddle& rightPaddle, GameState& state, Sound beep, Sound hit);
 	void Draw();
 
 private:
