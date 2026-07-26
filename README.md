@@ -32,6 +32,14 @@ GenerateProjects.bat
 4. Build the `Application` project.
 5. Press F5.
 
+## Running
+
+If you're using the prebuilt binary and receive missing DLL errors, install the latest Microsoft Visual C++ Redistributable (x64).
+- **Windows Runtime:** [Microsoft Visual C++ Redistributable (x64)](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist)
+- **Latest Release:** [Download Pong](https://github.com/MSh103/1.Pong/releases/latest)
+
+
+
 ## Third-party
 
 - raylib (included in `Thirdparty/`)
