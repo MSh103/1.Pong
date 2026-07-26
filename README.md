@@ -2,6 +2,17 @@
 
 A Pong clone written in C++ using raylib.
 
+## Screenshots
+
+### Title Screen
+![Title Screen](screenshots/title.png)
+
+### Gameplay
+![Gameplay](screenshots/gameplay.png)
+
+### Win Screen
+![Win Screen](screenshots/win.png)
+
 ## Requirements
 
 - Visual Studio 2022 (or newer)
