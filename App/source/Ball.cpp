@@ -62,10 +62,20 @@ void Ball::Update(Paddle& leftPaddle, Paddle& rightPaddle, GameState& state)
 	if (m_BallPosition.y <= 0 + m_Radius || m_BallPosition.y >= (m_ScreenHeight - m_Radius))
 		m_BallVelocity.y = -m_BallVelocity.y;
 
-	if (m_BallPosition.x <= 0 + m_Radius)
-		state = GameState::Lose;
-	else if (m_BallPosition.x >= (m_ScreenWidth-m_Radius))
-		state = GameState::Win;
+	if (state == GameState::SinglePlayer)
+	{
+		if (m_BallPosition.x <= 0 + m_Radius)
+			state = GameState::Lose;
+		else if (m_BallPosition.x >= (m_ScreenWidth - m_Radius))
+			state = GameState::Win;
+	}
+	else if (state == GameState::MultiPlayer)
+	{
+		if (m_BallPosition.x <= 0 + m_Radius)
+			state = GameState::Player2Win;
+		else if (m_BallPosition.x >= (m_ScreenWidth - m_Radius))
+			state = GameState::Player1Win;
+	}
 
 
 	if (CheckCollisionCircleRec({ GetFuturePosition().x, m_BallPosition.y }, m_Radius, leftPaddle.GetRectangle()))

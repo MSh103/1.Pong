@@ -5,6 +5,7 @@
 
 struct GameSpecification;
 class Ball;
+enum class GameState : int;
 
 class Paddle
 {
@@ -22,8 +23,13 @@ public:
 	
 	void Reset();
 
-	void Update(Ball& ball);
+	void Update(Ball& ball, GameState& state);
 	void Draw();
+
+private:
+	void UpdateAi(Ball& ball);
+	void UpdateLocal();
+
 
 public:
 	int Score = 0;

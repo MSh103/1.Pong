@@ -15,6 +15,9 @@ enum class GameState : int
 {
 	Title,
 	SinglePlayer,
+	MultiPlayer,
+	Player1Win,
+	Player2Win,
 	Lose,
 	Win,
 	End

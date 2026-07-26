@@ -29,10 +29,10 @@ void Game::Run()
 	while (!WindowShouldClose() && m_State != GameState::End)
 	{
 		/// //////////////UPDATE//////////////
-		if (m_State == GameState::SinglePlayer)
+		if (m_State == GameState::SinglePlayer || m_State == GameState::MultiPlayer)
 		{
-			m_LeftPaddle.Update(m_Ball);
-			m_RightPaddle.Update(m_Ball);
+			m_LeftPaddle.Update(m_Ball, m_State);
+			m_RightPaddle.Update(m_Ball, m_State);
 
 			m_Ball.Update(m_LeftPaddle, m_RightPaddle, m_State);
 		}
@@ -40,8 +40,11 @@ void Game::Run()
 		{
 			if (IsKeyDown(KEY_ONE))
 				m_State = GameState::SinglePlayer;
+			if (IsKeyDown(KEY_TWO))
+				m_State = GameState::MultiPlayer;
 		}
-		if (m_State == GameState::Win || m_State == GameState::Lose)
+		if (m_State == GameState::Win || m_State == GameState::Lose ||
+			m_State == GameState::Player1Win || m_State == GameState::Player2Win)
 		{
 			if (IsKeyDown(KEY_SPACE))
 			{
@@ -87,7 +90,22 @@ void Game::Run()
 			DrawCenteredText("Press Space To Play Again...", m_Spec.ScreenWidth, m_Spec.ScreenHeight * 2 / 3 - 50, 32, SKYBLUE);
 			DrawCenteredText("Press Enter To Exit...", m_Spec.ScreenWidth, m_Spec.ScreenHeight * 2 / 3 + 50, 32, SKYBLUE);
 		}
-		
+		else if (m_State == GameState::Player1Win)
+		{
+			DrawCenteredText("Player 1 Won!", m_Spec.ScreenWidth, m_Spec.ScreenHeight / 3, 60, RED);
+			DrawCenteredText(std::format("Player 1 Score: {}", m_LeftPaddle.Score), m_Spec.ScreenWidth, m_Spec.ScreenHeight / 3 + 70, 24, GREEN);
+			DrawCenteredText(std::format("Player 2 Score: {}", m_RightPaddle.Score), m_Spec.ScreenWidth, m_Spec.ScreenHeight / 3 + 100, 24, GREEN);
+			DrawCenteredText("Press Space To Play Again...", m_Spec.ScreenWidth, m_Spec.ScreenHeight * 2 / 3 - 50, 32, SKYBLUE);
+			DrawCenteredText("Press Enter To Exit...", m_Spec.ScreenWidth, m_Spec.ScreenHeight * 2 / 3 + 50, 32, SKYBLUE);
+		}
+		else if (m_State == GameState::Player2Win)
+		{
+			DrawCenteredText("Player 2 Won!", m_Spec.ScreenWidth, m_Spec.ScreenHeight / 3, 60, RED);
+			DrawCenteredText(std::format("Player 1 Score: {}", m_LeftPaddle.Score), m_Spec.ScreenWidth, m_Spec.ScreenHeight / 3 + 70, 24, GREEN);
+			DrawCenteredText(std::format("Player 2 Score: {}", m_RightPaddle.Score), m_Spec.ScreenWidth, m_Spec.ScreenHeight / 3 + 100, 24, GREEN);
+			DrawCenteredText("Press Space To Play Again...", m_Spec.ScreenWidth, m_Spec.ScreenHeight * 2 / 3 - 50, 32, SKYBLUE);
+			DrawCenteredText("Press Enter To Exit...", m_Spec.ScreenWidth, m_Spec.ScreenHeight * 2 / 3 + 50, 32, SKYBLUE);
+		}
 
 		EndDrawing();
 	}
@@ -97,5 +115,5 @@ void Game::DrawTitleScreen()
 {
 	DrawCenteredText("Pong", m_Spec.ScreenWidth, m_Spec.ScreenHeight / 3, 60, VIOLET);
 	DrawCenteredText("Press 1 for SinglePlayer...", m_Spec.ScreenWidth, (m_Spec.ScreenHeight * 2 / 3) - 50, 32, PURPLE);
-	DrawCenteredText("Press 2 for MultiPlayer...", m_Spec.ScreenWidth, (m_Spec.ScreenHeight * 2 / 3) + 50, 32, { 200, 122, 255, 105 });
+	DrawCenteredText("Press 2 for MultiPlayer...", m_Spec.ScreenWidth, (m_Spec.ScreenHeight * 2 / 3) + 50, 32, PURPLE);
 }
