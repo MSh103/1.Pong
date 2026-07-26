@@ -17,7 +17,9 @@ project "Application"
     files
     {
         "App/source/**.h",
-        "App/source/**.cpp"
+        "App/source/**.cpp",
+        "resources/pong.ico",
+        "resources/pong.rc"
     }
 
     includedirs
@@ -36,3 +38,12 @@ project "Application"
         "user32",
         "kernel32"
     }
+
+    filter "configurations:Release"
+        runtime "Release"
+        optimize "On"
+        targetname "Pong"
+
+    filter "configurations:Debug"
+        runtime "Debug"
+        symbols "On"

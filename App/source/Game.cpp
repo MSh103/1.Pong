@@ -20,6 +20,11 @@ Game::Game(const GameSpecification& spec)
 
 	InitAudioDevice();
 
+	Image icon = LoadImage("Assets/pong.png");
+	SetWindowIcon(icon);
+
+	UnloadImage(icon);
+
 	m_BeepSE = LoadSound("Assets/beep.ogg");
 	m_HitSE = LoadSound("Assets/hit.ogg");
 }
