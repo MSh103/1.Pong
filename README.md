@@ -1,6 +1,6 @@
 # Pong Clone
 
-A Pong clone written in C++ using raylib.
+A Pong clone written in C++ using raylib. The first game of the 20 Games Challenge.
 
 ## Screenshots
 
