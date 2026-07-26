@@ -5,6 +5,7 @@
 
 #include <cmath>
 #include <time.h>
+#include <numbers>
 
 #include <raymath.h>
 
@@ -15,6 +16,7 @@ Ball::Ball(const GameSpecification& spec)
 
 	float side = GetRandomValue(0, 100);
 	float dir = GetRandomValue(0, 30);
+	dir = dir * std::numbers::pi / 180;
 	float x, y;
 
 	if (side <= 50)
@@ -37,10 +39,10 @@ Ball::Ball(const GameSpecification& spec)
 void Ball::Reset()
 {
 	m_BallPosition = m_DefaultBallPosition;
-	SetRandomSeed((unsigned int)time(NULL));
-
+	
 	float side = GetRandomValue(0, 100);
 	float dir = GetRandomValue(0, 30);
+	dir = dir * std::numbers::pi/180;
 	float x, y;
 
 	if (side <= 50)
@@ -77,17 +79,19 @@ void Ball::Update(Paddle& leftPaddle, Paddle& rightPaddle, GameState& state)
 			state = GameState::Player1Win;
 	}
 
+	constexpr float paddleInfluence = 0.4f;
+	constexpr float paddleDeflection = 0.001f;
 
 	if (CheckCollisionCircleRec({ GetFuturePosition().x, m_BallPosition.y }, m_Radius, leftPaddle.GetRectangle()))
 	{
-		m_BallVelocity.x = std::min(std::abs(m_BallVelocity.x) + 0.001f, m_MaxBallSpeed);
-		m_BallVelocity.y += leftPaddle.GetVelocity().y * 0.4f;
+		m_BallVelocity.x = std::min(std::abs(m_BallVelocity.x) + paddleDeflection, m_MaxBallSpeed);
+		m_BallVelocity.y += leftPaddle.GetVelocity().y * paddleInfluence;
 
 		leftPaddle.Score++;
 	}
 	if (CheckCollisionCircleRec({ m_BallPosition.x, GetFuturePosition().y }, m_Radius, leftPaddle.GetRectangle()))
 	{
-		m_BallVelocity.y += leftPaddle.GetVelocity().y + 0.4f;
+		m_BallVelocity.y += leftPaddle.GetVelocity().y + paddleInfluence;
 		
 		leftPaddle.Score++;
 	}
@@ -95,8 +99,8 @@ void Ball::Update(Paddle& leftPaddle, Paddle& rightPaddle, GameState& state)
 
 	if (CheckCollisionCircleRec({ GetFuturePosition().x, m_BallPosition.y }, m_Radius, rightPaddle.GetRectangle()))
 	{
-		m_BallVelocity.x = -(std::min(std::abs(m_BallVelocity.x) + 0.001f, m_MaxBallSpeed));
-		m_BallVelocity.y += rightPaddle.GetVelocity().y * 0.4f;
+		m_BallVelocity.x = -(std::min(std::abs(m_BallVelocity.x) + paddleDeflection, m_MaxBallSpeed));
+		m_BallVelocity.y += rightPaddle.GetVelocity().y * paddleInfluence;
 		
 		rightPaddle.Score++;
 	}

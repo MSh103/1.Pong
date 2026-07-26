@@ -63,5 +63,6 @@ install_manifest.txt
 *.dylib
 *.a
 
+*.bak
 
 bin-int/
