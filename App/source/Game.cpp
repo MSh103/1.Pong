@@ -26,6 +26,10 @@ Game::Game(const GameSpecification& spec)
 
 Game::~Game()
 {
+	UnloadSound(m_BeepSE);
+	UnloadSound(m_HitSE);
+	
+	CloseAudioDevice();
 	CloseWindow();
 }
 
